@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +17,9 @@ import java.time.Instant;
 public class AuctionEntity implements Persistable<String> {
     @Id
     private String id;
+    @Column("current_price")
     private BigDecimal currentPrice;
+    @Column("min_step")
     private BigDecimal minStep;
     private Instant endTime;
     private boolean isFinished;

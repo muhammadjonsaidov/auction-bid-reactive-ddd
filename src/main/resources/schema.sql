@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS auctions
     min_step      DECIMAL(19, 2) NOT NULL,
     end_time      TIMESTAMP      NOT NULL,
     is_finished   BOOLEAN        NOT NULL,
-    version       INTEGER        NOT NULL
+    version       BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS bids

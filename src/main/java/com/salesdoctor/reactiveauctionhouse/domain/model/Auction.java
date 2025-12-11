@@ -52,8 +52,7 @@ public class Auction {
 
         // rule 2
         Money minimumRequired = currentPrice.add(minStep);
-        if (!bidAmount.isGreaterThan(currentPrice) && !bidAmount.equals(minimumRequired)) {
-
+        if (!bidAmount.isGreaterThan(currentPrice)) {
             if (bidAmount.amount().compareTo(minimumRequired.amount()) < 0) {
                 throw new InvalidBidException(String.format("Narx juda past. Minimal taklif %s bo'lishi kerak", minimumRequired.amount()));
             }
@@ -63,6 +62,6 @@ public class Auction {
         Bid newBid = new Bid(bidderId, bidAmount, Instant.now());
         this.bids.add(newBid);
 
-        return new BidPlacedEvent(this.id, bidderId, bidAmount, Instant.now());
+        return new BidPlacedEvent(this.id, bidderId, bidAmount.amount(), Instant.now());
     }
 }
