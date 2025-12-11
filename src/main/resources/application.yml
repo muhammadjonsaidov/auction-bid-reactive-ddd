@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: reactive-auction-house
+
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5433/auction_db
+    username: postgres
+    password: root
+    pool:
+      initial-size: 5
+      max-size: 20  # Connection Pool (Juda muhim high-load uchun)
+
+  sql:
+    init:
+      mode: always # schema.sql ni har doim ishga tushirish (dev uchun)
+
+server:
+  port: 8080
+  netty:
+    connection-timeout: 2s # Backpressure uchun qiziq joylar
+
+logging:
+  level:
+    root: INFO
+    org.springframework.r2dbc: DEBUG # SQL so'rovlarni ko'rish uchun

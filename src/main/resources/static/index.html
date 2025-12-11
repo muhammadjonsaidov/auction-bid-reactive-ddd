@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Reactive Auction House</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .container { display: flex; gap: 20px; }
+        .card { border: 1px solid #ddd; padding: 20px; border-radius: 8px; flex: 1; }
+        #price-box { font-size: 48px; font-weight: bold; color: #2ecc71; text-align: center; margin: 20px 0; }
+        .log { height: 300px; overflow-y: scroll; background: #f4f4f4; padding: 10px; border: 1px solid #ccc; font-family: monospace; }
+        button { background: #3498db; color: white; border: none; padding: 10px 20px; cursor: pointer; font-size: 16px; border-radius: 4px;}
+        button:hover { background: #2980b9; }
+        input { padding: 10px; font-size: 16px; width: 100px; }
+        .flash { animation: flash 0.5s; }
+        @keyframes flash { 0% { background-color: #ffeaa7; } 100% { background-color: transparent; } }
+    </style>
+</head>
+<body>
+
+<h1>🚀 Reactive Auction House (DDD + WebFlux)</h1>
+
+<div class="container">
+    <!-- Chap tomon: Narx qo'yish -->
+    <div class="card">
+        <h3>Auksion ID: <span id="auctionId">12345</span></h3>
+        <div id="price-box">$100.00</div>
+
+        <div style="text-align: center;">
+            <input type="number" id="bidAmount" placeholder="Narx" value="110">
+            <button onclick="placeBid()">Bid berish 🔨</button>
+        </div>
+        <p id="status" style="text-align: center; margin-top: 10px;"></p>
+    </div>
+
+    <!-- O'ng tomon: Jonli Log (SSE) -->
+    <div class="card">
+        <h3>🔴 Jonli Oqim (Server-Sent Events)</h3>
+        <div id="log" class="log"></div>
+    </div>
+</div>
+
+<script>
+    const auctionId = '12345';
+    const userId = 'user_' + Math.floor(Math.random() * 1000); // Random user
+    const logDiv = document.getElementById('log');
+    const priceBox = document.getElementById('price-box');
+
+    // 1. SSE (Streaming) ga ulanish
+    const eventSource = new EventSource(`/api/auctions/${auctionId}/stream`);
+
+    eventSource.onopen = () => log("🌐 Streamga ulandi...");
+
+    eventSource.onmessage = (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            console.log("SERVERDAN KELDI:", data);
+
+            // O'ZGARDI: Endi to'g'ridan-to'g'ri 'amount' ni o'qiymiz
+            if (data.amount) {
+                priceBox.innerText = '$' + data.amount;
+
+                // Animatsiya
+                priceBox.classList.remove('flash');
+                void priceBox.offsetWidth;
+                priceBox.classList.add('flash');
+
+                log(`⚡ YANGI NARX: $${data.amount} (Bidder: ${data.bidderId})`);
+            }
+        } catch (e) {
+            console.error("JSON XATOSI:", e);
+        }
+    };
+
+    eventSource.onerror = (err) => {
+        console.error("EventSource failed:", err);
+        // log("❌ Aloqa uzildi. Qayta ulanmoqda...");
+    };
+
+    // 2. Bid berish (Command)
+    async function placeBid() {
+        const amount = document.getElementById('bidAmount').value;
+        const status = document.getElementById('status');
+        status.innerText = "Yuborilmoqda...";
+
+        try {
+            const response = await fetch(`/api/auctions/${auctionId}/bid`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: userId, amount: parseFloat(amount) })
+            });
+
+            if (response.ok) {
+                status.innerText = "✅ Qabul qilindi!";
+                status.style.color = "green";
+                // Keyingi narx uchun inputni oshirib qo'yamiz
+                document.getElementById('bidAmount').value = parseFloat(amount) + 10;
+            } else {
+                status.innerText = "❌ Xatolik! (Narx past yoki auksion tugagan)";
+                status.style.color = "red";
+            }
+        } catch (e) {
+            status.innerText = "❌ Server xatosi";
+        }
+    }
+
+    function log(msg) {
+        const div = document.createElement('div');
+        div.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        logDiv.prepend(div);
+    }
+</script>
+
+</body>
+</html>
