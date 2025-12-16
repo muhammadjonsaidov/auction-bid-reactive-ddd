@@ -1,13 +1,10 @@
-package com.salesdoctor.reactiveauctionhouse.infrastructure.adapter.persistance;
+package com.salesdoctor.reactiveauctionhouse.infrastructure.adapter.out.persistance;
 
 import com.salesdoctor.reactiveauctionhouse.domain.model.Auction;
-import com.salesdoctor.reactiveauctionhouse.domain.model.vo.Money;
+import com.salesdoctor.reactiveauctionhouse.domain.vo.Money;
 import com.salesdoctor.reactiveauctionhouse.domain.port.AuctionRepository;
-import com.salesdoctor.reactiveauctionhouse.infrastructure.adapter.persistance.entity.AuctionEntity;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Component

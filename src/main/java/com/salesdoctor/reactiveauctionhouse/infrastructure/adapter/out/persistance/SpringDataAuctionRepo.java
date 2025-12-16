@@ -1,6 +1,5 @@
-package com.salesdoctor.reactiveauctionhouse.infrastructure.adapter.persistance;
+package com.salesdoctor.reactiveauctionhouse.infrastructure.adapter.out.persistance;
 
-import com.salesdoctor.reactiveauctionhouse.infrastructure.adapter.persistance.entity.AuctionEntity;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.stereotype.Repository;
 

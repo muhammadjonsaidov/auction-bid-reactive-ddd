@@ -1,8 +1,9 @@
-package com.salesdoctor.reactiveauctionhouse.infrastructure.adapter.web;
+package com.salesdoctor.reactiveauctionhouse.infrastructure.adapter.in.web;
 
-import com.salesdoctor.reactiveauctionhouse.application.dto.BidRequest;
-import com.salesdoctor.reactiveauctionhouse.application.service.BiddingService;
+import com.salesdoctor.reactiveauctionhouse.application.port.in.AuctionStreamUseCase;
+import com.salesdoctor.reactiveauctionhouse.application.port.in.PlaceBidUseCase;
 import com.salesdoctor.reactiveauctionhouse.domain.event.BidPlacedEvent;
+import com.salesdoctor.reactiveauctionhouse.infrastructure.adapter.in.web.dto.BidRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,8 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class AuctionController {
 
-    private final BiddingService biddingService;
+    private final PlaceBidUseCase placeBidUseCase;
+    private final AuctionStreamUseCase streamUseCase;
 
     /**
      * COMMAND: Narx talif qilish
@@ -26,8 +28,9 @@ public class AuctionController {
             @PathVariable String auctionId,
             @RequestBody BidRequest request) {
 
-        return biddingService.placeBid(auctionId, request.userId(), request.amount())
-                .then(Mono.fromCallable(() -> ResponseEntity.ok().build()));
+        return placeBidUseCase
+                .placeBid(auctionId, request.userId(), request.amount())
+                .thenReturn(ResponseEntity.ok().build());
     }
 
     /**
@@ -35,11 +38,10 @@ public class AuctionController {
      * produces = TEXT_EVENT_STREAM_VALUE juda muhim!
      * Bu brauzerga aytadiki: "Aloqani uzma, men senga ma'lumot tashlab turaman".
      */
-    @GetMapping(value = "/{auctionId}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/{auctionId}/stream",
+            produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<BidPlacedEvent> streamAuction(@PathVariable String auctionId) {
         System.out.println("FRONTEND ULANDI: " + auctionId);
-
-        return biddingService.getAuctionStream(auctionId)
-                .doOnNext(e -> System.out.println("FRONTENDGA KETYAPTI: " + e));
+        return streamUseCase.stream(auctionId);
     }
 }

@@ -1,4 +1,4 @@
-package com.salesdoctor.reactiveauctionhouse.infrastructure.adapter.persistance.entity;
+package com.salesdoctor.reactiveauctionhouse.infrastructure.adapter.out.persistance;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -7,7 +7,6 @@ import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;

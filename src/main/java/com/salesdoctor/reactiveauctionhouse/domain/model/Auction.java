@@ -2,7 +2,7 @@ package com.salesdoctor.reactiveauctionhouse.domain.model;
 
 import com.salesdoctor.reactiveauctionhouse.domain.event.BidPlacedEvent;
 import com.salesdoctor.reactiveauctionhouse.domain.exception.InvalidBidException;
-import com.salesdoctor.reactiveauctionhouse.domain.model.vo.Money;
+import com.salesdoctor.reactiveauctionhouse.domain.vo.Money;
 import lombok.Getter;
 
 import java.time.Instant;

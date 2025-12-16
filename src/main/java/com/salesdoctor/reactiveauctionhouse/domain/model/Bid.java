@@ -1,6 +1,6 @@
 package com.salesdoctor.reactiveauctionhouse.domain.model;
 
-import com.salesdoctor.reactiveauctionhouse.domain.model.vo.Money;
+import com.salesdoctor.reactiveauctionhouse.domain.vo.Money;
 
 import java.time.Instant;
 

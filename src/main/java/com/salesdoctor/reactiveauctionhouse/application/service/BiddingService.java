@@ -1,8 +1,10 @@
 package com.salesdoctor.reactiveauctionhouse.application.service;
 
+import com.salesdoctor.reactiveauctionhouse.application.port.in.AuctionStreamUseCase;
+import com.salesdoctor.reactiveauctionhouse.application.port.in.PlaceBidUseCase;
 import com.salesdoctor.reactiveauctionhouse.domain.event.BidPlacedEvent;
-import com.salesdoctor.reactiveauctionhouse.domain.model.vo.Money;
 import com.salesdoctor.reactiveauctionhouse.domain.port.AuctionRepository;
+import com.salesdoctor.reactiveauctionhouse.domain.vo.Money;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,31 +18,31 @@ import java.math.BigDecimal;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class BiddingService {
+public class BiddingService implements PlaceBidUseCase, AuctionStreamUseCase {
 
     private final AuctionRepository auctionRepository;
 
-    // "Hot Stream" - Barcha ulanganlarga xabar tarqatuvchi (Multicast)
     private final Sinks.Many<BidPlacedEvent> eventSink = Sinks.many().multicast().onBackpressureBuffer();
 
-    @Transactional // Reactive tranzaksiya
+    @Override
+    @Transactional
     public Mono<Void> placeBid(String auctionId, String bidderId, BigDecimal amount) {
         return auctionRepository.findById(auctionId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Auksion topilmadi: " + auctionId)))
+                .switchIfEmpty(Mono.error(
+                        new RuntimeException("Auksion topilmadi: " + auctionId)))
                 .flatMap(auction -> {
-                    BidPlacedEvent event = auction.placeBid(bidderId, Money.of(amount));
-
-                    log.info("Yangi taklif qabul qilindi: {} -> {}", auctionId, event);
+                    BidPlacedEvent event =
+                            auction.placeBid(bidderId, Money.of(amount));
 
                     return auctionRepository.save(auction)
-                            .doOnSuccess(saved -> eventSink.tryEmitNext(event))
+                            .doOnSuccess(a -> eventSink.tryEmitNext(event))
                             .then();
                 });
     }
 
-    // SSE (Server-Sent Events) uchun oqim
-    public Flux<BidPlacedEvent> getAuctionStream(String auctionId) {
+    @Override
+    public Flux<BidPlacedEvent> stream(String auctionId) {
         return eventSink.asFlux()
-                .filter(event -> event.auctionId().equals(auctionId));
+                .filter(e -> e.auctionId().equals(auctionId));
     }
 }

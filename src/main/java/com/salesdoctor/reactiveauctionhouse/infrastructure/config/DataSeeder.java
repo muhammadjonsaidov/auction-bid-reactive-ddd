@@ -1,7 +1,7 @@
 package com.salesdoctor.reactiveauctionhouse.infrastructure.config;
 
 import com.salesdoctor.reactiveauctionhouse.domain.model.Auction;
-import com.salesdoctor.reactiveauctionhouse.domain.model.vo.Money;
+import com.salesdoctor.reactiveauctionhouse.domain.vo.Money;
 import com.salesdoctor.reactiveauctionhouse.domain.port.AuctionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.salesdoctor.reactiveauctionhouse.domain.model.vo;
+package com.salesdoctor.reactiveauctionhouse.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

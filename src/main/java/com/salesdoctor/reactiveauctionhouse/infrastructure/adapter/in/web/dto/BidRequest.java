@@ -1,4 +1,4 @@
-package com.salesdoctor.reactiveauctionhouse.application.dto;
+package com.salesdoctor.reactiveauctionhouse.infrastructure.adapter.in.web.dto;
 
 import java.math.BigDecimal;
 
